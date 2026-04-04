@@ -1,5 +1,6 @@
 import requests
 import db_manager
+import notify # Import our new notification module
 
 def get_steam_price(app_id):
     """Fetches the current price from the Steam API."""
@@ -44,6 +45,9 @@ def run_tracker():
             
             if current_price <= target_price:
                 print(f"🔥 DEAL ALERT: {name} is ${current_price}! (Target: ${target_price})")
+
+                # Trigger the Email message
+                notify.send_email_alert(name, current_price, target_price)
             else:
                 print(f"   Status: Too expensive (${current_price}).")
 

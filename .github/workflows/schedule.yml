@@ -1,0 +1,46 @@
+name: Daily Game Price Tracker
+
+# This tells GitHub WHEN to run the script
+on:
+  schedule:
+    # Runs at 10:00 AM UTC every day
+    - cron: '0 10 * * *'
+  # This line allows you to click a "Run Workflow" button manually on GitHub
+  workflow_dispatch: 
+
+jobs:
+  run-tracker:
+    runs-on: ubuntu-latest # A free, temporary Linux server
+
+    steps:
+    # 1. Download your repository's files onto the server
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Install Python
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # 3. Install the required libraries (Requests, Dotenv)
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    # 4. Run your scraper, passing in the hidden secrets
+    - name: Run Tracker
+      env:
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+        RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+      run: python scraper.py
+
+    # 5. Save the updated SQLite database back to your repository
+    - name: Commit updated database
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add data/tracker.db
+        # Only commit if the database actually changed
+        git commit -m "chore: auto-update price database" || echo "No changes to commit"
+        git push
