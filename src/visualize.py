@@ -39,10 +39,10 @@ def generate_dashboard():
             template='plotly_dark' # A sleek dark mode theme
         )
         
-        # Save to a static HTML file inside the data folder
-        os.makedirs('data', exist_ok=True)
-        fig.write_html('data/dashboard.html')
-        print("✅ Dashboard saved to data/dashboard.html")
+        # Save as index.html in a new docs folder for GitHub Pages
+        os.makedirs('docs', exist_ok=True)
+        fig.write_html('docs/index.html')
+        print("✅ Dashboard saved to docs/index.html")
         
     except Exception as e:
         print(f"❌ Error generating dashboard: {e}")
