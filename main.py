@@ -1,14 +1,15 @@
 import src.db_manager as db
 import src.notify as notify
 import src.visualize as visualize
-from src.scrapers import steam, cheapshark
+from src.scrapers import steam, cheapshark, nintendo
 
-# The master routing dictionary
+# Update the master routing dictionary
 SCRAPER_MAP = {
     "steam": steam.get_price,
     "gog": lambda app_id: cheapshark.get_price(app_id, "gog"),
     "fanatical": lambda app_id: cheapshark.get_price(app_id, "fanatical"),
-    "humble": lambda app_id: cheapshark.get_price(app_id, "humble")
+    "humble": lambda app_id: cheapshark.get_price(app_id, "humble"),
+    "nintendo": nintendo.get_price # <-- Add nintendo here
 }
 
 def run_tracker():
