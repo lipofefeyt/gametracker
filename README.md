@@ -1,23 +1,23 @@
-# 🎮 gametracker
+# 🎮 Game Price Tracker
 
-A lightweight, automated Python tool to track the prices of wanted video games across various online storefronts, log their historical data, and alert you when a deal hits your personal acceptable threshold.
+A fully automated, cloud-hosted Python tool that tracks video game prices on Steam. It runs daily via GitHub Actions, logs historical pricing data to SQLite, and emails you when a game drops below your personal target price.
 
-## 🚀 Features (Current & Planned)
-- [x] Scrape prices from Steam's internal API.
-- [x] Store historical pricing data in a local SQLite database.
-- [ ] Send instant notifications (Telegram/Discord) when a game drops below a target price.
-- [ ] Support additional storefronts (GOG, Epic, CheapShark API).
-- [ ] Generate visualizations of price trends over time.
-- [ ] Fully automated via GitHub Actions or Cron.
+## 🚀 Features
+- **Cloud Automation:** Runs automatically every day at 10:00 AM UTC using GitHub Actions.
+- **SQLite Storage:** Keeps a historical ledger of prices to track sales trends.
+- **Email Alerts:** Automatically fires an email to your inbox when a deal is found.
+- **Localized Pricing:** Configured to pull EU pricing (€) directly from the Steam API.
 
 ## 🛠️ Tech Stack
-* **Language:** Python 3.10+
+* **Language:** Python 3.10
 * **Database:** SQLite3
-* **Libraries:** `requests`
+* **CI/CD:** GitHub Actions
+* **Libraries:** `requests`, `python-dotenv`
 
-## 📦 Setup & Installation
+## ➕ How to Track a New Game
 
-1. **Clone the repository:**
+Because the database lives on GitHub and is updated daily by the server, follow this workflow to add new games:
+
+1. **Pull the latest database from the cloud:**
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/gametracker.git](https://github.com/YOUR_USERNAME/gametracker.git)
-   cd gametracker
+   git pull origin main

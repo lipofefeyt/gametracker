@@ -4,7 +4,7 @@ import notify # Import our new notification module
 
 def get_steam_price(app_id):
     """Fetches the current price from the Steam API."""
-    url = f"https://store.steampowered.com/api/appdetails?appids={app_id}&cc=us"
+    url = f"https://store.steampowered.com/api/appdetails?appids={app_id}&cc=fr"
     try:
         response = requests.get(url)
         data = response.json()
@@ -26,10 +26,6 @@ def run_tracker():
     """Main execution loop."""
     print("Starting gametracker...")
     db_manager.setup_database()
-    
-    # 1. Seed some initial data (You can remove this later)
-    db_manager.add_game("1245620", "Elden Ring", 40.00)
-    db_manager.add_game("1086940", "Baldur's Gate 3", 30.00)
 
     # 2. Fetch games from DB
     db_manager.cursor.execute("SELECT app_id, name, target_price FROM games")
@@ -44,12 +40,12 @@ def run_tracker():
             db_manager.log_price(app_id, current_price)
             
             if current_price <= target_price:
-                print(f"🔥 DEAL ALERT: {name} is ${current_price}! (Target: ${target_price})")
+                print(f"🔥 DEAL ALERT: {name} is {current_price}€! (Target: {target_price}€)")
 
                 # Trigger the Email message
                 notify.send_email_alert(name, current_price, target_price)
             else:
-                print(f"   Status: Too expensive (${current_price}).")
+                print(f"   Status: Too expensive ({current_price}€).")
 
 if __name__ == "__main__":
     run_tracker()

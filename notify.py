@@ -18,7 +18,7 @@ def send_email_alert(game_name, price, target_price):
 
     # Create the email structure
     msg = EmailMessage()
-    msg['Subject'] = f"🔥 Deal Alert: {game_name} is ${price:.2f}!"
+    msg['Subject'] = f"🔥 Deal Alert: {game_name} is {price:.2f}€!"
     msg['From'] = SENDER_EMAIL
     msg['To'] = RECEIVER_EMAIL
     
@@ -27,8 +27,8 @@ def send_email_alert(game_name, price, target_price):
     🔥 DEAL ALERT 🔥
     
     🎮 Game: {game_name}
-    💰 Current Price: ${price:.2f}
-    🎯 Target Price: ${target_price:.2f}
+    💰 Current Price: {price:.2f}€
+    🎯 Target Price: {target_price:.2f}€
     """
     msg.set_content(body)
     
