@@ -49,6 +49,25 @@ def main():
         # Get target price
         target_price = float(input(f"\nEnter your Target Price for '{name}' (e.g., 19.99): "))
         
+        # --- NEW CODE TO ADD ---
+        print("\nWhich store do you want to track this on?")
+        print("[1] Steam")
+        print("[2] GOG")
+        print("[3] Fanatical")
+        print("[4] Humble Bundle")
+        
+        store_choices = {"1": "steam", "2": "gog", "3": "fanatical", "4": "humble"}
+        store_choice = input("Enter store number (default is 1): ")
+        
+        # Default to steam if they hit enter or type something weird
+        store = store_choices.get(store_choice, "steam")
+        # -----------------------
+
+        # Save to database (Make sure to pass 'store' instead of "steam")
+        db_manager.setup_database()
+        db_manager.add_game(app_id, name, target_price, store) 
+        print(f"✅ SUCCESS: Added {name} on {store.upper()} with a target of {target_price}€!")
+        
         # Save to database
         db_manager.setup_database()
         db_manager.add_game(app_id, name, target_price, "steam") # <-- Add "steam" here
