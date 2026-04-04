@@ -37,7 +37,7 @@ jobs:
         SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
         APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
         RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
-      run: python scraper.py
+      run: python main.py
 
     # 5. Save the updated SQLite database back to your repository
     - name: Commit updated database

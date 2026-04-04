@@ -1,5 +1,5 @@
 import requests
-import db_manager
+import src.db_manager as db_manager
 
 def search_steam(query):
     """Searches the Steam storefront API and returns the top 5 matches."""
