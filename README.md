@@ -1,23 +1,32 @@
-# 🎮 Game Price Tracker
+# 🎮 GameTracker
 
-A fully automated, cloud-hosted Python tool that tracks video game prices on Steam. It runs daily via GitHub Actions, logs historical pricing data to SQLite, and emails you when a game drops below your personal target price.
+A fully automated, cloud-hosted Python tool that tracks video game prices across multiple digital storefronts. It runs daily via GitHub Actions, logs historical pricing data to SQLite, and emails you when a game drops below your personal target price.
 
-## 🚀 Features
-- **Cloud Automation:** Runs automatically every day at 10:00 AM UTC using GitHub Actions.
-- **SQLite Storage:** Keeps a historical ledger of prices to track sales trends.
-- **Email Alerts:** Automatically fires an email to your inbox when a deal is found.
-- **Localized Pricing:** Configured to pull EU pricing (€) directly from the Steam API.
+## 🚀 Supported Storefronts
+Thanks to a modular plugin architecture and the **CheapShark API**, GameTracker currently supports:
+- ✅ **Steam** (Native API)
+- ✅ **GOG** (via CheapShark)
+- ✅ **Fanatical** (via CheapShark)
+- ✅ **Humble Bundle** (via CheapShark)
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Architecture
 * **Language:** Python 3.10
-* **Database:** SQLite3
-* **CI/CD:** GitHub Actions
-* **Libraries:** `requests`, `python-dotenv`
+* **Database:** SQLite3 (Normalized schema with cross-store support)
+* **CI/CD:** GitHub Actions (Automated Daily Cron Job)
+* **Notifications:** Native SMTP Email integration
 
-## ➕ How to Track a New Game
-
-Because the database lives on GitHub and is updated daily by the server, follow this workflow to add new games:
-
-1. **Pull the latest database from the cloud:**
-   ```bash
-   git pull origin main
+### Folder Structure
+The codebase uses a scalable `src/` pattern to easily drop in new store plugins:
+```text
+gametracker/
+├── .github/workflows/   # Cloud Automation
+├── data/
+│   └── tracker.db       # SQLite Database
+├── src/
+│   ├── scrapers/        # Storefront Plugins
+│   │   ├── steam.py
+│   │   └── cheapshark.py
+│   ├── db_manager.py
+│   └── notify.py
+├── add_game.py          # Interactive CLI Tool
+└── main.py              # Master Routing Loop
