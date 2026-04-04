@@ -1,5 +1,6 @@
 import src.db_manager as db_manager
 import requests
+from src.scrapers import nintendo
 
 def search_steam(query):
     """Searches the Steam storefront API and returns the top 5 matches."""
@@ -28,7 +29,7 @@ def main():
     print("[2] GOG")
     print("[3] Fanatical")
     print("[4] Humble Bundle")
-    print("[5] Nintendo eShop")
+    print("[5] Deku Deals")
     
     store_choices = {"1": "steam", "2": "gog", "3": "fanatical", "4": "humble", "5": "nintendo"}
     store_choice = input("\nEnter store number (default is 1): ")
@@ -39,10 +40,36 @@ def main():
 
     # 2. Branch logic based on store type
     if store == "nintendo":
-        # HTML Scraper Flow
-        print(f"\n⚠️  {store.upper()} requires a direct link, not a search.")
-        name = input("Enter the name of the game (for your records): ")
-        app_id = input(f"Paste the full URL for {name} on the {store.upper()} store: ")
+        # Nintendo BeautifulSoup Search Flow
+        search_query = input(f"\nEnter the name of the game to track on {store.upper()}: ")
+        results = nintendo.search_games(search_query)
+        
+        if not results:
+            print("❌ No games found via search.")
+            print("Fallback to Manual Entry:")
+            name = input("Enter the name of the game: ")
+            app_id = input(f"Paste the full URL for {name} on the {store.upper()} store: ")
+        else:
+            print("\nSelect the correct game:")
+            for i, game in enumerate(results):
+                print(f"[{i + 1}] {game['name']}")
+            print("[0] Manual URL Entry (Fallback)")
+
+            try:
+                choice = int(input("\nEnter the number of your choice: "))
+                if choice == 0:
+                    name = input("Enter the name of the game: ")
+                    app_id = input("Paste the full URL: ")
+                elif choice > len(results):
+                    print("Canceled.")
+                    return
+                else:
+                    selected_game = results[choice - 1]
+                    app_id = selected_game['url']
+                    name = selected_game['name']
+            except ValueError:
+                print("❌ Invalid input. Please enter numbers only.")
+                return
         
     else:
         # Steam API Flow (Steam, GOG, Fanatical, Humble)
@@ -55,7 +82,6 @@ def main():
 
         print("\nSelect the correct game:")
         for i, game in enumerate(results):
-            # We don't show the price here anymore because CheapShark prices might be different
             print(f"[{i + 1}] {game['name']} (Steam ID: {game['id']})") 
         print("[0] Cancel")
 

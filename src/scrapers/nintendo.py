@@ -1,46 +1,70 @@
 import requests
 from bs4 import BeautifulSoup
+import urllib.parse
 import re
 
 def get_price(url):
-    """Scrapes the raw HTML of a Nintendo eShop page to find the price."""
-    
-    # Websites block scripts. We MUST use a User-Agent to pretend to be a real browser.
+    """Scrapes Deku Deals for the current game price."""
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     
     try:
         response = requests.get(url, headers=headers)
-        response.raise_for_status() # Throw an error if the page is a 404
-        
-        # Parse the chaotic HTML into a beautiful, searchable tree
         soup = BeautifulSoup(response.content, 'html.parser')
         
-        # PRO TIP: Website layouts change constantly. 
-        # We look for the € symbol next to numbers anywhere in the main content.
-        # This is often more reliable than guessing the exact CSS class Nintendo uses today.
+        # Find all prices on the page (Deku Deals explicitly lists prices cleanly)
+        prices = soup.find_all(string=re.compile(r'[0-9]+[,.][0-9]+\s*€|€\s*[0-9]+[,.][0-9]+|\$\s*[0-9]+[,.][0-9]+'))
         
-        # Example: Find all text containing something like "59,99 €" or "€19.99"
-        text_blocks = soup.find_all(string=re.compile(r'[0-9]+[,.][0-9]+\s*€|€\s*[0-9]+[,.][0-9]+'))
-        
-        if text_blocks:
-            # Grab the first match (usually the main price)
-            raw_price = text_blocks[0]
-            
-            # Clean it up: Remove the €, replace commas with dots, and turn it into a float
+        if prices:
+            # Grab the first valid price we find
+            raw_price = prices[0]
             clean_price = re.sub(r'[^\d,.]', '', raw_price).replace(',', '.')
             return float(clean_price)
             
-        print(f"⚠️ Could not find a Euro price on: {url}")
         return None
-        
     except Exception as e:
-        print(f"Error scraping Nintendo eShop: {e}")
+        print(f"Error scraping price: {e}")
         return None
 
-# Quick local test
-if __name__ == "__main__":
-    # Test with a real EU Nintendo URL
-    test_url = "https://www.nintendo.fr/Jeux/Jeux-Nintendo-Switch/The-Legend-of-Zelda-Tears-of-the-Kingdom-2270788.html"
-    print(f"Current price: {get_price(test_url)}€")
+def search_games(query):
+    """Searches the Deku Deals database directly, avoiding Search Engine bot protection."""
+    print(f"🔍 Bypassing Search Engines: Searching Deku Deals for '{query}'...")
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    
+    # We hit their native search page directly
+    url = f"https://www.dekudeals.com/search?q={urllib.parse.quote(query)}"
+    
+    try:
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        results = []
+        
+        # Find all links on the search results page
+        for a_tag in soup.find_all('a', href=True):
+            href = a_tag['href']
+            
+            # Deku Deals game URLs always start with /items/
+            if href.startswith('/items/'):
+                title = a_tag.get_text(strip=True)
+                
+                # Filter out empty text (like image links)
+                if title and len(title) > 2:
+                    full_url = f"https://www.dekudeals.com{href}"
+                    
+                    # Prevent duplicates
+                    if not any(r['url'] == full_url for r in results):
+                        results.append({"name": title, "url": full_url})
+                        
+            # Stop once we have 5 clean results
+            if len(results) >= 5:
+                break
+                
+        return results
+        
+    except Exception as e:
+        print(f"Error searching Deku Deals: {e}")
+        return []
