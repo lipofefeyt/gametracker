@@ -1,5 +1,6 @@
 import src.db_manager as db
 import src.notify as notify
+import src.visualize as visualize
 from src.scrapers import steam, cheapshark
 
 # The master routing dictionary
@@ -36,6 +37,9 @@ def run_tracker():
                     print(f"   Status: Too expensive ({current_price}€).")
         else:
             print(f"⚠️ Warning: No scraper module built for '{store}' yet!")
+
+    # Generate graph after checking all prices
+    visualize.generate_dashboard()
 
 if __name__ == "__main__":
     run_tracker()

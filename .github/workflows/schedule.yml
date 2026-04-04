@@ -44,7 +44,7 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add data/tracker.db
+        git add data/tracker.db data/dashboard.html
         # Only commit if the database actually changed
         git commit -m "chore: auto-update price database" || echo "No changes to commit"
         git push
