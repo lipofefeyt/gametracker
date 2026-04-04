@@ -15,7 +15,8 @@ def setup_database():
         CREATE TABLE IF NOT EXISTS games (
             app_id TEXT PRIMARY KEY,
             name TEXT,
-            target_price REAL
+            target_price REAL,
+            store TEXT
         )
     ''')
     
@@ -30,15 +31,16 @@ def setup_database():
     ''')
     conn.commit()
 
-def add_game(app_id, name, target_price):
+def add_game(app_id, name, target_price, store):
     """Adds a game to track."""
     cursor.execute('''
-        INSERT INTO games (app_id, name, target_price)
-        VALUES (?, ?, ?)
+        INSERT INTO games (app_id, name, target_price, store)
+        VALUES (?, ?, ?, ?)
         ON CONFLICT(app_id) DO UPDATE SET
             name=excluded.name,
-            target_price=excluded.target_price
-    ''', (app_id, name, target_price))
+            target_price=excluded.target_price,
+            store=excluded.store
+    ''', (app_id, name, target_price, store))
     conn.commit()
 
 def log_price(app_id, price):
@@ -56,7 +58,7 @@ def log_price(app_id, price):
             VALUES (?, ?, ?)
         ''', (app_id, price, today))
         conn.commit()
-        print(f"[DB] Logged ${price} for App {app_id} on {today}")
+        print(f"[DB] Logged €{price} for App {app_id} on {today}")
     else:
         print(f"[DB] Price for App {app_id} already logged today.")
 

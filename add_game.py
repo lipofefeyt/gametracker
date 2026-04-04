@@ -51,7 +51,7 @@ def main():
         
         # Save to database
         db_manager.setup_database()
-        db_manager.add_game(app_id, name, target_price)
+        db_manager.add_game(app_id, name, target_price, "steam") # <-- Add "steam" here
         print(f"✅ SUCCESS: Added {name} to the database with a target of {target_price}€!")
 
     except ValueError:
