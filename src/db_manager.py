@@ -43,6 +43,11 @@ def add_game(app_id, name, target_price, store):
     ''', (app_id, name, target_price, store))
     conn.commit()
 
+def get_games():
+    """Returns all tracked games as a list of (app_id, name, target_price, store) tuples."""
+    cursor.execute("SELECT app_id, name, target_price, store FROM games")
+    return cursor.fetchall()
+
 def log_price(app_id, price):
     """Saves today's price."""
     today = datetime.now().strftime("%Y-%m-%d")
