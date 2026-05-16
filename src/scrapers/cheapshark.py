@@ -13,7 +13,7 @@ def get_price(steam_app_id, store_name):
     url = f"https://www.cheapshark.com/api/1.0/games?steamAppID={steam_app_id}"
     
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         data = response.json()
         
         if not data:

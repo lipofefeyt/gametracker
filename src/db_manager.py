@@ -2,16 +2,19 @@ import sqlite3
 from datetime import datetime
 import os
 
-# Ensure the data directory exists
-os.makedirs('data', exist_ok=True)
+_conn = None
 
-# Connect to the database
-conn = sqlite3.connect('data/tracker.db')
-cursor = conn.cursor()
+def _get_conn():
+    global _conn
+    if _conn is None:
+        os.makedirs('data', exist_ok=True)
+        _conn = sqlite3.connect('data/tracker.db')
+    return _conn
 
 def setup_database():
     """Creates the necessary tables if they are missing."""
-    cursor.execute('''
+    conn = _get_conn()
+    conn.execute('''
         CREATE TABLE IF NOT EXISTS games (
             app_id TEXT PRIMARY KEY,
             name TEXT,
@@ -19,8 +22,7 @@ def setup_database():
             store TEXT
         )
     ''')
-    
-    cursor.execute('''
+    conn.execute('''
         CREATE TABLE IF NOT EXISTS price_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             app_id TEXT,
@@ -33,7 +35,8 @@ def setup_database():
 
 def add_game(app_id, name, target_price, store):
     """Adds a game to track."""
-    cursor.execute('''
+    conn = _get_conn()
+    conn.execute('''
         INSERT INTO games (app_id, name, target_price, store)
         VALUES (?, ?, ?, ?)
         ON CONFLICT(app_id) DO UPDATE SET
@@ -45,23 +48,24 @@ def add_game(app_id, name, target_price, store):
 
 def get_games():
     """Returns all tracked games as a list of (app_id, name, target_price, store) tuples."""
-    cursor.execute("SELECT app_id, name, target_price, store FROM games")
+    conn = _get_conn()
+    cursor = conn.execute("SELECT app_id, name, target_price, store FROM games")
     return cursor.fetchall()
 
 def log_price(app_id, price):
-    """Saves today's price."""
+    """Saves today's price if not already logged."""
+    conn = _get_conn()
     today = datetime.now().strftime("%Y-%m-%d")
-    
-    cursor.execute('''
-        SELECT id FROM price_history 
-        WHERE app_id = ? AND date_checked = ?
-    ''', (app_id, today))
-    
+
+    cursor = conn.execute(
+        "SELECT id FROM price_history WHERE app_id = ? AND date_checked = ?",
+        (app_id, today)
+    )
     if not cursor.fetchone():
-        cursor.execute('''
-            INSERT INTO price_history (app_id, price, date_checked)
-            VALUES (?, ?, ?)
-        ''', (app_id, price, today))
+        conn.execute(
+            "INSERT INTO price_history (app_id, price, date_checked) VALUES (?, ?, ?)",
+            (app_id, price, today)
+        )
         conn.commit()
         print(f"[DB] Logged €{price} for App {app_id} on {today}")
     else:

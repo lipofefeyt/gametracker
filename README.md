@@ -8,6 +8,7 @@ Thanks to a modular plugin architecture and the **CheapShark API**, GameTracker 
 - ✅ **GOG** (via CheapShark)
 - ✅ **Fanatical** (via CheapShark)
 - ✅ **Humble Bundle** (via CheapShark)
+- ✅ **Nintendo Switch** (via Deku Deals)
 
 ## 🛠️ Tech Stack & Architecture
 * **Language:** Python 3.10
@@ -21,12 +22,16 @@ The codebase uses a scalable `src/` pattern to easily drop in new store plugins:
 gametracker/
 ├── .github/workflows/   # Cloud Automation
 ├── data/
-│   └── tracker.db       # SQLite Database
+│   └── tracker.db       # SQLite Database (gitignored)
+├── docs/
+│   └── index.html       # GitHub Pages dashboard (auto-generated)
 ├── src/
 │   ├── scrapers/        # Storefront Plugins
 │   │   ├── steam.py
-│   │   └── cheapshark.py
+│   │   ├── cheapshark.py
+│   │   └── nintendo.py  # Deku Deals scraper for Switch titles
 │   ├── db_manager.py
-│   └── notify.py
+│   ├── notify.py
+│   └── visualize.py     # Plotly dashboard generator
 ├── add_game.py          # Interactive CLI Tool
 └── main.py              # Master Routing Loop

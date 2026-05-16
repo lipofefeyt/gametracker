@@ -65,7 +65,7 @@ def main():
 
         try:
             choice = int(input("\nEnter the number of your choice: "))
-            if choice == 0 or choice > len(results):
+            if choice < 1 or choice > len(results):
                 print("Canceled.")
                 return
 

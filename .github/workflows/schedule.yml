@@ -37,6 +37,7 @@ jobs:
         SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
         APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
         RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+        STEAM_COUNTRY_CODE: ${{ secrets.STEAM_COUNTRY_CODE }}
       run: python main.py
 
     - name: Commit updated dashboard

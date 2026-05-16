@@ -10,7 +10,7 @@ def get_price(url):
     }
     
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=10)
         soup = BeautifulSoup(response.content, 'html.parser')
         
         # Find all prices on the page (Deku Deals explicitly lists prices cleanly)
@@ -39,7 +39,7 @@ def search_games(query):
     url = f"https://www.dekudeals.com/search?q={urllib.parse.quote(query)}"
     
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=10)
         soup = BeautifulSoup(response.content, 'html.parser')
         results = []
         
